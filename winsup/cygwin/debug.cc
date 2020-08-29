@@ -223,7 +223,7 @@ close_handle (const char *func, int ln, HANDLE h, const char *name, bool force)
 
   if (!ret)
     {
-      system_printf ("CloseHandle(%s<%p>) failed %s:%d, %E", name, h, func, ln);
+      // system_printf ("CloseHandle(%s<%p>) failed %s:%d, %E", name, h, func, ln);
       try_to_debug ();
     }
   return ret;
