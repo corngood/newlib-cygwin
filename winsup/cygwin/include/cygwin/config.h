@@ -46,7 +46,7 @@ extern inline struct _reent *__getreent (void)
 {
   register char *ret;
 #ifdef __x86_64__
-  __asm __volatile__ ("movq %%gs:8,%0" : "=r" (ret));
+  __asm __volatile__ ("movl cygtls_slot(%%rip),%%r10d\nmovq %%gs:0x1480(,%%r10d,8),%0" : "=r" (ret) : : "r10");
 #else
   __asm __volatile__ ("movl %%fs:4,%0" : "=r" (ret));
 #endif

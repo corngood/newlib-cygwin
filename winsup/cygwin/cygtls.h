@@ -286,7 +286,11 @@ private:
 #include "cygerrno.h"
 #include "ntdll.h"
 
-#define _my_tls (*((_cygtls *) ((PBYTE) NtCurrentTeb()->Tib.StackBase - CYGTLS_PADSIZE)))
+void _set_tls(TEB*);
+inline void _set_tls() { _set_tls(NtCurrentTeb()); }
+_cygtls* _current_tls();
+
+#define _my_tls (*_current_tls())
 extern _cygtls *_main_tls;
 extern _cygtls *_sig_tls;
 

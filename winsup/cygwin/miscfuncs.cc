@@ -378,6 +378,7 @@ pthread_wrapper (PVOID arg)
   /* Set stack values in TEB */
   PTEB teb = NtCurrentTeb ();
   teb->Tib.StackBase = wrapper_arg.stackbase;
+  _set_tls();
   teb->Tib.StackLimit = wrapper_arg.stacklimit ?: wrapper_arg.stackaddr;
   /* Set DeallocationStack value.  If we have an application-provided stack,
      we set DeallocationStack to NULL, so NtTerminateThread does not deallocate
@@ -647,6 +648,7 @@ create_new_main_thread_stack (PVOID &allocationbase, SIZE_T parent_commitsize)
     return NULL;
   NtCurrentTeb()->Tib.StackBase = ((PBYTE) allocationbase + stacksize);
   NtCurrentTeb()->Tib.StackLimit = stacklimit;
+  _set_tls();
   return ((PBYTE) allocationbase + stacksize - 16);
 }
 #endif

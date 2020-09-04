@@ -475,6 +475,7 @@ child_info_fork::alloc_stack ()
 	 StackBase in the child to be the same as in the parent, so that the
 	 computation of _my_tls is correct. */
       teb->Tib.StackBase = (PVOID) stackbase;
+      _set_tls(teb);
     }
 }
 

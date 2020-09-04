@@ -141,6 +141,7 @@ frok::child (volatile char * volatile here)
 		myself->pid, myself->ppid, __builtin_frame_address (0));
   sigproc_printf ("hParent %p, load_dlls %d", hParent, load_dlls);
 
+  _set_tls();
   /* Make sure threadinfo information is properly set up. */
   if (&_my_tls != _main_tls)
     {

@@ -11,7 +11,7 @@ details. */
 #include "ntdll.h"
 #include "shared_info.h"
 
-static DWORD _my_oldfunc;
+DWORD NO_COPY cygtls_slot;
 
 static char *search_for  = (char *) cygthread::stub;
 unsigned threadfunc_ix[8];
@@ -25,7 +25,9 @@ __attribute__ ((force_align_arg_pointer))
 static void WINAPI
 threadfunc_fe (VOID *arg)
 {
-  _cygtls::call ((DWORD (*)  (void *, void *)) TlsGetValue (_my_oldfunc), arg);
+  PVOID f = TlsGetValue (cygtls_slot);
+  _set_tls();
+  _cygtls::call ((DWORD (*)  (void *, void *)) f, arg);
 }
 
 /* If possible, redirect the thread entry point to a cygwin routine which
@@ -62,7 +64,7 @@ munge_threadfunc ()
 	  for (i = 0; threadfunc_ix[i]; i++)
 	    if (!threadfunc || ebp[threadfunc_ix[i]] == threadfunc)
 	       ebp[threadfunc_ix[i]] = (char *) threadfunc_fe;
-	  TlsSetValue (_my_oldfunc, threadfunc);
+	  TlsSetValue (cygtls_slot, threadfunc);
 	}
     }
 }
@@ -81,6 +83,8 @@ dll_entry (HANDLE h, DWORD reason, void *static_load)
   switch (reason)
     {
     case DLL_PROCESS_ATTACH:
+      cygtls_slot = TlsAlloc ();
+      _set_tls();
       init_console_handler (false);
 
       cygwin_hmodule = (HMODULE) h;
@@ -97,7 +101,6 @@ dll_entry (HANDLE h, DWORD reason, void *static_load)
       memcpy (_REENT, _GLOBAL_REENT, sizeof (struct _reent));
 
       dll_crt0_0 ();
-      _my_oldfunc = TlsAlloc ();
       dll_finished_loading = true;
       break;
     case DLL_PROCESS_DETACH:
@@ -105,6 +108,7 @@ dll_entry (HANDLE h, DWORD reason, void *static_load)
 	shared_destroy ();
       break;
     case DLL_THREAD_ATTACH:
+      _set_tls();
       if (dll_finished_loading)
 	munge_threadfunc ();
       break;

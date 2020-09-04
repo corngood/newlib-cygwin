@@ -130,7 +130,8 @@ EOF
 	.seh_proc _sigfe_maybe
 _sigfe_maybe:					# stack is aligned on entry!
 	.seh_endprologue
-	movq	%gs:8,%r10			# location of bottom of stack
+	movl	cygtls_slot(%rip),%r10d
+	movq	%gs:0x1480(,%r10d,8),%r10			# location of bottom of stack
 	leaq	$tls::initialized(%r10),%r11	# where we will be looking
 	cmpq	%r11,%rsp			# stack loc > than tls
 	jge	0f				# yep.  we don't have a tls.
@@ -143,7 +144,8 @@ _sigfe_maybe:					# stack is aligned on entry!
 	.seh_proc _sigfe
 _sigfe:						# stack is aligned on entry!
 	.seh_endprologue
-	movq	%gs:8,%r10			# location of bottom of stack
+	movl	cygtls_slot(%rip),%r10d
+	movq	%gs:0x1480(,%r10d,8),%r10			# location of bottom of stack
 1:	movl	\$1,%r11d			# potential lock value
 	xchgl	%r11d,$tls::stacklock(%r10)	# see if we can grab it
 	movl	%r11d,$tls::spinning(%r10)	# flag if we are waiting for lock
@@ -167,7 +169,8 @@ _sigfe:						# stack is aligned on entry!
 _sigbe:						# return here after cygwin syscall
 						# stack is aligned on entry!
 	.seh_endprologue
-	movq	%gs:8,%r10			# address of bottom of tls
+	movl	cygtls_slot(%rip),%r10d
+	movq	%gs:0x1480(,%r10d,8),%r10			# location of bottom of stack
 1:	movl	\$1,%r11d			# potential lock value
 	xchgl	%r11d,$tls::stacklock(%r10)	# see if we can grab it
 	movl	%r11d,$tls::spinning(%r10)	# flag if we are waiting for lock
@@ -247,7 +250,8 @@ sigdelayed:
 	movdqa	%xmm0,0x20(%rsp)
 	.seh_endprologue
 
-	movq	%gs:8,%r12			# get tls
+	movl	cygtls_slot(%rip),%r12d
+	movq	%gs:0x1480(,%r12d,8),%r12			# location of bottom of stack
 	movl	$tls::saved_errno(%r12),%r15d	# temporarily save saved_errno
 	movq	\$$tls::start_offset,%rcx	# point to beginning of tls block
 	addq	%r12,%rcx			#  and store as first arg to method
@@ -368,7 +372,8 @@ stabilize_sig_stack:
 	subq	\$0x20,%rsp
 	.seh_stackalloc 32
 	.seh_endprologue
-	movq	%gs:8,%r12
+	movl	cygtls_slot(%rip),%r12d
+	movq	%gs:0x1480(,%r12d,8),%r12			# location of bottom of stack
 1:	movl	\$1,%r10d
 	xchgl	%r10d,$tls::stacklock(%r12)
 	movl	%r10d,$tls::spinning(%r12)	# flag if we are waiting for lock
