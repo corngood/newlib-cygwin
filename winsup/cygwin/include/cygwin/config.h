@@ -37,7 +37,7 @@ extern inline struct _reent *__getreent (void)
 {
   register char *ret;
 #if defined(__x86_64__)
-  __asm __volatile__ ("movq %%gs:8,%0" : "=r" (ret));
+  __asm __volatile__ ("movl cygtls_slot(%%rip),%%r10d\nmovq %%gs:0x1480(,%%r10d,8),%0" : "=r" (ret) : : "r10");
 #elif defined(__aarch64__)
   /* x18 register points to TEB, offset 0x8 points to stack base.
      See _TEB structure definition in winsup\cygwin\local_includes\ntdll.h

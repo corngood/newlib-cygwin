@@ -17,6 +17,20 @@ details. */
 #include "sigproc.h"
 #include "exception.h"
 
+extern DWORD cygtls_slot;
+
+void _set_tls(TEB *teb)
+{
+  TlsSetValue(cygtls_slot, teb->Tib.StackBase);
+}
+
+_cygtls* _current_tls()
+{
+  void *ret;
+  __asm __volatile__ ("movl cygtls_slot(%%rip),%%r10d\nmovq %%gs:0x1480(,%%r10d,8),%0" : "=r" (ret) : : "r10");
+  return (_cygtls *) ((PBYTE) ret - __CYGTLS_PADSIZE__);
+}
+
 /* Two calls to get the stack right... */
 void
 _cygtls::call (DWORD (*func) (void *, void *), void *arg)
@@ -25,6 +39,7 @@ _cygtls::call (DWORD (*func) (void *, void *), void *arg)
   /* Initialize this thread's ability to respond to things like
      SIGSEGV or SIGFPE. */
   exception protect;
+  _set_tls();
   _my_tls.call2 (func, arg, buf);
 }
 
