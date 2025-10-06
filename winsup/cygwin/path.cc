@@ -1937,6 +1937,26 @@ symlink_native (const char *oldpath, path_conv &win32_newpath)
   flags = win32_oldpath.isdir () ? SYMBOLIC_LINK_FLAG_DIRECTORY : 0;
   if (wincap.has_unprivileged_createsymlink ())
     flags |= SYMBOLIC_LINK_FLAG_ALLOW_UNPRIVILEGED_CREATE;
+
+  {
+    char nfpath[SYMLINK_MAX + 1];
+    symlink_info sym;
+    int res = sys_wcstombs (nfpath, SYMLINK_MAX, final_oldpath->Buffer);
+    if (res > SYMLINK_MAX)
+      {
+	SetLastError (ERROR_FILE_NOT_FOUND);
+        final_newpath->Buffer[1] = L'?';
+        return -1;
+      }
+    res = sym.posixify (nfpath);
+    if (strcmp (sym.content (), oldpath))
+      {
+        SetLastError (ERROR_FILE_NOT_FOUND);
+        final_newpath->Buffer[1] = L'?';
+        return -1;
+      }
+  }
+
   if (!CreateSymbolicLinkW (final_newpath->Buffer, final_oldpath->Buffer,
 			    flags))
     {
