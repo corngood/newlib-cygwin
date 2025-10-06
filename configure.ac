@@ -3166,7 +3166,7 @@ case " $target_configdirs " in
   *" --with-newlib "*)
    case "$target" in
     *-cygwin*)
-      FLAGS_FOR_TARGET=$FLAGS_FOR_TARGET' -L$$r/$(TARGET_SUBDIR)/winsup/cygwin -isystem $$s/winsup/cygwin/include'
+      FLAGS_FOR_TARGET=$FLAGS_FOR_TARGET' -B$$r/$(TARGET_SUBDIR)/winsup/cygwin -isystem $$s/winsup/cygwin/include'
       ;;
    esac
 

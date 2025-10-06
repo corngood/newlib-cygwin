@@ -44,7 +44,6 @@ AC_DEFUN([_GCC_AUTOCONF_VERSION_CHECK],
   [m4_fatal([Please use exactly Autoconf ]_GCC_AUTOCONF_VERSION[ instead of ]m4_defn([m4_PACKAGE_VERSION])[.])])
 ])
 m4_define([AC_INIT], m4_defn([AC_INIT])[
-_GCC_AUTOCONF_VERSION_CHECK
 ])
 
 

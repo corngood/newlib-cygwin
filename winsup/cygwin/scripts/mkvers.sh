@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/nix/store/q7sqwn7i6w2b67adw0bmix29pxg85x3w-bash-5.3p3/bin/sh
 # mkvers.sh - Make version information for cygwin DLL
 #
 # This file is part of Cygwin.
