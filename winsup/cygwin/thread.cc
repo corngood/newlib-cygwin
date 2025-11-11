@@ -412,7 +412,7 @@ List<pthread> pthread::threads;
 /* member methods */
 pthread::pthread ():verifyable_object (PTHREAD_MAGIC), win32_obj_id (0),
 		    valid (false), suspended (false), canceled (false),
-		    cancelstate (0), canceltype (0), cancel_event (0),
+		    cancelstate (0), canceltype (0), cygtls (NULL), cancel_event (0),
 		    joiner (NULL), next (NULL), cleanup_stack (NULL)
 {
   if (this != pthread_null::get_null_pthread ())
