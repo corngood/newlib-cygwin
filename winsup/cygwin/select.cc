@@ -738,6 +738,7 @@ peek_pipe (select_record *s, bool from_select)
       if (n == PDA_ERROR)
 	{
 	  select_printf ("read: %s, n %d", fh->get_name (), n);
+	  ((fhandler_pipe *) fh)->set_hung_up ();
 	  if (s->except_selected)
 	    gotone += s->except_ready = true;
 	  if (s->read_selected)
@@ -780,6 +781,14 @@ out:
       if (n == PDA_ERROR && s->except_selected)
 	gotone += s->except_ready = true;
     }
+
+  if (!s->read_selected && dev == FH_PIPER) {
+      ssize_t n = pipe_data_available (s->fd, fh, h, PDA_READ);
+      if (n == PDA_ERROR) {
+	((fhandler_pipe *) fh)->set_hung_up ();
+	gotone += s->except_ready = true;
+      }
+  }
   return gotone;
 }
 

@@ -456,6 +456,7 @@ public:
   virtual class fhandler_timerfd *is_timerfd () { return NULL; }
   virtual class fhandler_mqueue *is_mqueue () { return NULL; }
   virtual int is_windows () {return 0; }
+  virtual bool is_hung_up () { return false; }
 
   virtual void raw_read (void *ptr, size_t& ulen);
   virtual ssize_t raw_write (const void *ptr, size_t ulen);
@@ -722,6 +723,8 @@ class fhandler_socket_wsock: public fhandler_socket
   ~fhandler_socket_wsock ();
 
   fhandler_socket_wsock *is_wsock_socket () { return this; }
+
+  bool is_hung_up () { return saw_shutdown_read(); }
 
   ssize_t recvfrom (void *ptr, size_t len, int flags,
 		    struct sockaddr *from, int *fromlen);
@@ -1221,12 +1224,15 @@ class fhandler_pipe: public fhandler_pipe_fifo
 {
 private:
   pid_t popen_pid;
+  bool hung_up = false;
   void release_select_sem (const char *);
 public:
   fhandler_pipe ();
 
   bool ispipe() const { return true; }
   void set_pipe_buf_size ();
+  bool is_hung_up () { return hung_up; }
+  void set_hung_up () { hung_up = true; }
 
   void set_popen_pid (pid_t pid) {popen_pid = pid;}
   pid_t get_popen_pid () const {return popen_pid;}

@@ -58,8 +58,7 @@ poll (struct pollfd *fds, nfds_t nfds, int timeout)
 	    FD_SET(fds[i].fd, read_fds);
 	  if (fds[i].events & POLLOUT)
 	    FD_SET(fds[i].fd, write_fds);
-	  if (fds[i].events & POLLPRI)
-	    FD_SET(fds[i].fd, except_fds);
+	  FD_SET(fds[i].fd, except_fds);
 	}
       else if (fds[i].fd >= 0)
 	{
@@ -99,9 +98,8 @@ poll (struct pollfd *fds, nfds_t nfds, int timeout)
 	  /* Check if the descriptor has been closed, or if shutdown for the
 	     read side has been called on a socket. */
 	  if (cygheap->fdtab.not_open (fds[i].fd)
-	      || ((sock = cygheap->fdtab[fds[i].fd]->is_wsock_socket ())
-		  && sock->saw_shutdown_read ()))
-	    fds[i].revents = POLLHUP;
+				|| cygheap->fdtab[fds[i].fd]->is_hung_up())
+	    fds[i].revents |= POLLHUP;
 	  else
 	    {
 	      if ((fds[i].events & POLLIN) && FD_ISSET(fds[i].fd, read_fds))
