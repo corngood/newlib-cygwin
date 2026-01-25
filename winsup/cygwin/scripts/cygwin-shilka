@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/nix/store/f15k3dpilmiyv6zgpib289rnjykgr1r4-bash-5.3p9/bin/sh
 c="$(basename $1 .shilka).c"
 shilka -length -strip -no-definitions $1 && \
 sed -e '1,4d' -e '/KR_reset.*;/d' -e '/KR_output_statistics.*;/d' \

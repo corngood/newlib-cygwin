@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/nix/store/0m9dv7ml6vddmxj79s98l102d03sf9f1-perl-5.42.0/bin/perl
 use strict;
 use File::stat;
 sub update_maybe($%);
