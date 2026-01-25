@@ -40,6 +40,8 @@ AM_PROG_AS
 AC_LANG(C)
 AC_LANG(C++)
 
+EXEEXT=.exe
+
 AC_ARG_WITH([cross-bootstrap],[AS_HELP_STRING([--with-cross-bootstrap],[do not build programs using the MinGW toolchain or check for MinGW libraries (useful for bootstrapping a cross-compiler)])],[],[with_cross_bootstrap=no])
 
 AC_CYGWIN_INCLUDES
@@ -121,8 +123,6 @@ AM_CONDITIONAL(BUILD_DUMPER, [test "x$build_dumper" = "xyes"])
 # libbfd.a doesn't have a pkgconfig file, so we guess what it's dependencies
 # are, based on what's present in the build environment
 BFD_LIBS="-lintl -liconv -liberty -lz"
-AC_CHECK_LIB([sframe], [sframe_decode], [BFD_LIBS="${BFD_LIBS} -lsframe"])
-AC_CHECK_LIB([zstd], [ZSTD_isError], [BFD_LIBS="${BFD_LIBS} -lzstd"])
 AC_SUBST([BFD_LIBS])
 
 AC_CONFIG_FILES([
